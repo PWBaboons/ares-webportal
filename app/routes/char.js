@@ -7,17 +7,18 @@ import DefaultRoute from 'ares-webportal/mixins/default-route';
 
 export default Route.extend(DefaultRoute, ReloadableRoute, {
     gameApi: service(),
-    
-    afterModel: function(model) { 
+
+    afterModel: function(model) {
         if (model.get('char.playerbit')) {
             this.transitionTo('player', model.get('char.id'));
         }
     },
-    
+
     model: function(params) {
         let api = this.gameApi;
         return RSVP.hash({
             char: api.requestOne('character', { id: params['id'] }),
+            comps: api.requestOne('comps', { char_id: params['id'], filter: 'All', page: 1 }),
             game: this.modelFor('application').game,
             scenes: api.requestOne('scenes', { char_id: params['id'], filter: 'All', page: 1 }),
             sceneTypes: api.requestMany('sceneTypes') })
